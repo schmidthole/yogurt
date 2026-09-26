@@ -119,6 +119,10 @@ class GeneratorTests(unittest.TestCase):
                 ("seconds", True),
                 ("bpm", 0),
                 ("key", ""),
+                ("lyrics", 123),
+                ("lyrics", "я" * 4097),
+                ("vocal_language", "russian"),
+                ("vocal_language", "ru"),
             ):
                 bad = copy.deepcopy(original)
                 bad["stations"][0]["songs"][0][field] = value
@@ -203,6 +207,18 @@ class AceStepAdapterTests(unittest.TestCase):
             self.assertTrue(params.instrumental)
             self.assertTrue(generate_mock.call_args.args[3].use_random_seed)
             self.assertFalse(any(p.exists() for p in output_dirs))
+            backend.generate(
+                "Russian melodic rap",
+                180,
+                destination,
+                lyrics="[Verse]\nГород затих",
+                vocal_language="ru",
+            )
+            vocal = generate_mock.call_args.args[2]
+            self.assertFalse(vocal.instrumental)
+            self.assertEqual(vocal.lyrics, "[Verse]\nГород затих")
+            self.assertEqual(vocal.vocal_language, "ru")
+            self.assertFalse(vocal.use_cot_language)
             generate_mock.side_effect = lambda *a, **kw: SimpleNamespace(
                 success=False, audios=[], error="inference failed"
             )
@@ -216,7 +232,7 @@ class AceStepAdapterTests(unittest.TestCase):
 
         from generator.config import Song
 
-        song = Song("full song", 210, 85, "D minor")
+        song = Song("full song", 210, 85, "D minor", "[Verse]\nГород затих", "ru")
         cfg = replace(config(), stations=(Station("one", "one", "ambient", (song,)),))
         with tempfile.TemporaryDirectory() as directory:
             backend = MagicMock()
@@ -230,7 +246,13 @@ class AceStepAdapterTests(unittest.TestCase):
             self.assertTrue(worker.step())
             self.assertEqual(backend.generate.call_args.args[:2], ("full song", 210))
             self.assertEqual(
-                backend.generate.call_args.kwargs, {"bpm": 85, "key": "D minor"}
+                backend.generate.call_args.kwargs,
+                {
+                    "bpm": 85,
+                    "key": "D minor",
+                    "lyrics": "[Verse]\nГород затих",
+                    "vocal_language": "ru",
+                },
             )
             self.assertEqual(worker.levels(), {"one": 209})
 

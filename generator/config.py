@@ -11,6 +11,8 @@ class Song:
     seconds: int
     bpm: int
     key: str
+    lyrics: str = ""
+    vocal_language: str = "unknown"
 
 
 @dataclass(frozen=True)
@@ -69,12 +71,17 @@ def load_config(path: Path) -> Config:
             if not isinstance(item["songs"], list) or not item["songs"]:
                 raise ValueError("songs must be a nonempty list")
             for song in item["songs"]:
-                if not isinstance(song, dict) or set(song) != {
-                    "prompt",
-                    "seconds",
-                    "bpm",
-                    "key",
-                }:
+                if (
+                    not isinstance(song, dict)
+                    or not {
+                        "prompt",
+                        "seconds",
+                        "bpm",
+                        "key",
+                    }
+                    <= set(song)
+                    or set(song) - set(Song.__dataclass_fields__)
+                ):
                     raise ValueError("invalid song fields")
                 if any(
                     not isinstance(song[k], str) or not song[k].strip()
@@ -87,6 +94,16 @@ def load_config(path: Path) -> Config:
                     raise ValueError("crossfade exceeds song duration")
                 if type(song["bpm"]) is not int or not 30 <= song["bpm"] <= 300:
                     raise ValueError("invalid song bpm")
+                lyrics = song.get("lyrics", "")
+                language = song.get("vocal_language", "unknown")
+                if not isinstance(lyrics, str) or len(lyrics) > 4096:
+                    raise ValueError("lyrics must be text up to 4096 characters")
+                if not isinstance(language, str) or not re.fullmatch(
+                    r"[a-z]{2}|unknown", language
+                ):
+                    raise ValueError("invalid vocal language")
+                if language != "unknown" and not lyrics.strip():
+                    raise ValueError("vocal language requires lyrics")
                 songs.append(Song(**song))
         stations.append(Station(item["id"], item["name"], item["prompt"], tuple(songs)))
     return Config(**{**raw, "stations": tuple(stations)})

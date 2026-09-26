@@ -57,13 +57,25 @@ class AceStep:
         if not ok:
             raise RuntimeError(status)
 
-    def generate(self, prompt, seconds, destination, *, bpm=None, key=""):
+    def generate(
+        self,
+        prompt,
+        seconds,
+        destination,
+        *,
+        bpm=None,
+        key="",
+        lyrics="",
+        vocal_language="unknown",
+    ):
         from acestep.inference import GenerationConfig, GenerationParams, generate_music
 
         params = GenerationParams(
             caption=prompt,
-            lyrics="[Instrumental]",
-            instrumental=True,
+            lyrics=lyrics if lyrics.strip() else "[Instrumental]",
+            instrumental=not bool(lyrics.strip()),
+            vocal_language=vocal_language,
+            use_cot_language=bool(lyrics.strip()) and vocal_language == "unknown",
             bpm=bpm,
             keyscale=key,
             timesignature="4",

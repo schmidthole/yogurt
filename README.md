@@ -49,10 +49,20 @@ lord -config generator -deploy
 lord -config radio -deploy
 ```
 
-To share the same service within a tailnet later, install and authenticate
-Tailscale on the host, then run `sudo tailscale serve --bg http://127.0.0.1:8080`.
-Use the HTTPS URL reported by Serve with `/streams/night-drive.mp3` appended.
-No Yogurt application changes or public router port forwarding are needed.
+The station is also available privately over Tailscale:
+
+`https://ra.minskin-godzilla.ts.net/streams/night-drive.mp3`
+
+Connect the listening device (including iOS) to the same tailnet, then open that
+URL in a player that supports network audio streams. Tailnet access rules apply.
+The host runs Tailscale at startup, with persistent background Serve forwarding
+HTTPS to `http://127.0.0.1:8080`. LAN access remains available at the address above.
+Funnel is not enabled; no public router port forwarding is needed.
+
+To reproduce on another host, install and authenticate Tailscale, then run
+`sudo tailscale serve --bg http://127.0.0.1:8080`. Use the HTTPS URL reported by
+Serve with `/streams/night-drive.mp3` appended. Inspect with
+`tailscale serve status`; disable with `sudo tailscale serve --https=443 off`.
 
 ## development
 
@@ -188,3 +198,8 @@ after a Lord redeploy, reapply them on the Docker host:
 ```sh
 docker update --memory 24g --memory-swap 28g yogurt-generator
 ```
+
+The Night Drive mix includes three instrumental synthwave profiles and one Russian
+melodic hip-hop profile with original vocals. See [prompt research and vocal
+configuration](scripts/RUSSIAN_HIPHOP.md). Song profiles may supply `lyrics` and
+`vocal_language` (for example `ru`); omitted lyrics preserve instrumental output.

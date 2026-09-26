@@ -18,6 +18,7 @@ func TestSongProfiles(t *testing.T) {
 		valid      bool
 	}{
 		{"approved profiles", string(original), true},
+		{"invalid language", strings.Replace(string(original), "vocal_language: ru", "vocal_language: russian", 1), false},
 		{"too long", strings.Replace(string(original), "    seconds: 180", "    seconds: 481", 1), false},
 		{"invalid tempo", strings.Replace(string(original), "bpm: 82", "bpm: 0", 1), false},
 	} {
@@ -29,7 +30,7 @@ func TestSongProfiles(t *testing.T) {
 			if (err == nil) != tc.valid {
 				t.Fatalf("valid=%v err=%v", tc.valid, err)
 			}
-			if tc.valid && len(cfg.Stations[0].Songs) != 3 {
+			if tc.valid && len(cfg.Stations[0].Songs) != 4 {
 				t.Fatal("lost song profiles")
 			}
 		})

@@ -136,7 +136,13 @@ class Generator:
         try:
             if song:
                 self.backend.generate(
-                    song.prompt, seconds, raw, bpm=song.bpm, key=song.key
+                    song.prompt,
+                    seconds,
+                    raw,
+                    bpm=song.bpm,
+                    key=song.key,
+                    lyrics=song.lyrics,
+                    vocal_language=song.vocal_language,
                 )
             else:
                 self.backend.generate(station.prompt, seconds, raw)
