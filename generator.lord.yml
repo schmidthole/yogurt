@@ -1,5 +1,7 @@
 name: yogurt-generator
-server: replace-with-linux-host
+server: 127.0.0.1
+user: root
+sshkeyfile: /home/taylor/.ssh/lord-local
 platform: linux/amd64
 target: generator
 web: false

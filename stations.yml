@@ -3,6 +3,32 @@ crossfade_seconds: 5
 buffer_low_seconds: 1800
 buffer_target_seconds: 3600
 stations:
-  - id: night-drive
-    name: night drive
-    prompt: atmospheric instrumental synthwave, warm analog synthesizers, restrained drums, deep soft bass, slow evolving pads, no vocals
+- id: night-drive
+  name: night drive
+  prompt: Instrumental dramatic cinematic synthwave lo-fi soundscape. Dark minor-key analog pads, sparse
+    half-time drums, tape-worn arpeggios, deep sub bass, slow tension and expansive atmosphere.
+  songs:
+  - prompt: 'Instrumental dramatic synthwave lo-fi soundscape, 82 BPM, A minor. Vast dark analog pads,
+      tape-warped arpeggios, deep sustained sub bass, distant half-time drum-machine hits and a sparse
+      aching synth motif. Gritty cassette saturation, soft hiss, hazy reverb and a brooding neon-noir
+      atmosphere. Full cinematic arc: distant opening, slow rising tension, thunderous synth swell, suspended
+      breakdown and fading unresolved outro. Spacious, melancholic and ominous; synth-only instrumentation.'
+    seconds: 180
+    bpm: 82
+    key: A minor
+  - prompt: 'Instrumental cinematic dark synthwave lo-fi soundscape, 74 BPM, D minor. Rain-soaked dystopian
+      atmosphere, detuned analog strings, low pulsing synth bass, muffled sparse half-time beats and fragile
+      descending synth notes. Worn tape flutter, grainy saturation and long dark reverb. Slow dramatic
+      harmonic movement with plenty of space. Complete piece: misty ambient intro, gathering tension,
+      towering emotional pad crescendo, stripped-back afterglow and a long atmospheric ending.'
+    seconds: 210
+    bpm: 74
+    key: D minor
+  - prompt: 'Instrumental dramatic lo-fi synthwave soundscape, 90 BPM, C minor. A desolate midnight sci-fi
+      score with ominous analog drones, restrained sequenced arpeggios, heavy sub-bass pulses, dusty half-time
+      electronic drums and a distant haunting synth lead. Cassette haze, dark roomy echoes and textured
+      distortion. Slow-burn cinematic arrangement: quiet tension, widening layers, one powerful melodic
+      climax, dissolving percussion and an expansive fading outro. Sparse, serious and bittersweet.'
+    seconds: 180
+    bpm: 90
+    key: C minor

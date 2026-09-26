@@ -11,10 +11,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type Song struct {
+	Prompt  string `yaml:"prompt"`
+	Seconds int    `yaml:"seconds"`
+	BPM     int    `yaml:"bpm"`
+	Key     string `yaml:"key"`
+}
+
 type Station struct {
 	ID     string `yaml:"id"`
 	Name   string `yaml:"name"`
 	Prompt string `yaml:"prompt"`
+	Songs  []Song `yaml:"songs,omitempty"`
 }
 
 type Config struct {
@@ -50,6 +58,11 @@ func loadConfig(path string) (Config, error) {
 	for _, s := range c.Stations {
 		if !slug.MatchString(s.ID) || seen[s.ID] || strings.TrimSpace(s.Name) == "" || strings.TrimSpace(s.Prompt) == "" || strings.IndexFunc(s.Name, func(r rune) bool { return r < 32 }) >= 0 {
 			return c, fmt.Errorf("invalid station: %s", s.ID)
+		}
+		for _, song := range s.Songs {
+			if strings.TrimSpace(song.Prompt) == "" || strings.TrimSpace(song.Key) == "" || song.Seconds < 10 || song.Seconds > 480 || song.BPM < 30 || song.BPM > 300 || c.Crossfade*2 >= song.Seconds {
+				return c, fmt.Errorf("invalid song profile for station: %s", s.ID)
+			}
 		}
 		seen[s.ID] = true
 	}

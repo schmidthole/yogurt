@@ -3,6 +3,7 @@ import fcntl
 import logging
 import math
 import os
+import random
 import shutil
 import signal
 import subprocess
@@ -123,7 +124,9 @@ class Generator:
         if station is None:
             return False
         # reserve space for bounded raw and normalized temporary output
-        reserve = self.config.segment_seconds * 48000 * 2 * 4 + 512 * 1024 * 1024
+        song = random.choice(station.songs) if station.songs else None
+        seconds = song.seconds if song else self.config.segment_seconds
+        reserve = seconds * 48000 * 2 * 4 + 512 * 1024 * 1024
         if shutil.disk_usage(self.root).free < reserve:
             raise OSError("insufficient free disk space")
         identifier = f"{time.time_ns():020d}-{uuid.uuid4().hex}"
@@ -131,9 +134,14 @@ class Generator:
         raw = folder / f".generating-{identifier}.wav"
         processed = folder / f".generating-{identifier}.flac"
         try:
-            self.backend.generate(station.prompt, self.config.segment_seconds, raw)
+            if song:
+                self.backend.generate(
+                    song.prompt, seconds, raw, bpm=song.bpm, key=song.key
+                )
+            else:
+                self.backend.generate(station.prompt, seconds, raw)
             self.processor(raw, processed)
-            if abs(self.probe(processed) - self.config.segment_seconds) > 1:
+            if abs(self.probe(processed) - seconds) > 1:
                 raise ValueError("unexpected generated duration")
             # make fallback available before publishing the first queue entry
             fallback = folder / "fallback" / "seed.flac"
@@ -145,7 +153,7 @@ class Generator:
                 finally:
                     temporary.unlink(missing_ok=True)
             os.replace(processed, folder / "ready" / f"{identifier}.flac")
-            log.info("published segment for %s", station.id)
+            log.info("published complete song for %s", station.id)
         finally:
             raw.unlink(missing_ok=True)
             processed.unlink(missing_ok=True)
@@ -162,9 +170,9 @@ def main():
     args.root.mkdir(parents=True, exist_ok=True)
     with (args.root / ".generator.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        from generator.mrt import Magenta
+        from generator.acestep import AceStep
 
-        worker = Generator(config, args.root, Magenta())
+        worker = Generator(config, args.root, AceStep())
         worker.prepare()
         stop = threading.Event()
         for sig in (signal.SIGTERM, signal.SIGINT):
