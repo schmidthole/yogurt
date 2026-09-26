@@ -1,0 +1,4 @@
+#!/command/with-contenv sh
+set -eu
+until curl -fsS -X POST http://127.0.0.1:8081/recover >/dev/null; do sleep 1; done
+exec /command/s6-setuidgid yogurt liquidsoap /run/yogurt/radio.liq

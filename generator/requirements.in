@@ -1,0 +1,6 @@
+magenta-rt[jax]==2.0.3
+jax[cuda13]==0.10.1
+flax==0.12.7
+pyyaml==6.0.2
+
+backports-strenum==1.2.8

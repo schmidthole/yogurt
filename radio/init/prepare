@@ -1,0 +1,4 @@
+#!/command/with-contenv sh
+set -eu
+/app/radio -prepare
+chown -R 1000:1000 /radio /run/yogurt

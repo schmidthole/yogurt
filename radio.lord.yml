@@ -1,0 +1,12 @@
+name: yogurt-radio
+server: replace-with-linux-host
+platform: linux/amd64
+target: radio
+web: true
+hostname: radio.example.com
+email: replace-with-certificate-email
+environmentfile: radio.env
+volumes:
+  - /srv/yogurt:/radio
+webadvancedconfig:
+  writetimeout: 0

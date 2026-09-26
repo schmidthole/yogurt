@@ -1,0 +1,8 @@
+segment_seconds: 180
+crossfade_seconds: 5
+buffer_low_seconds: 1800
+buffer_target_seconds: 3600
+stations:
+  - id: night-drive
+    name: night drive
+    prompt: atmospheric instrumental synthwave, warm analog synthesizers, restrained drums, deep soft bass, slow evolving pads, no vocals

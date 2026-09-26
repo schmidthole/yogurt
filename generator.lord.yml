@@ -1,0 +1,8 @@
+name: yogurt-generator
+server: replace-with-linux-host
+platform: linux/amd64
+target: generator
+web: false
+gpus: all
+volumes:
+  - /srv/yogurt:/radio
