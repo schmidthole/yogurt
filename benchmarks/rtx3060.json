@@ -1,0 +1,75 @@
+{
+  "date": "2026-09-26",
+  "gpu": "NVIDIA RTX 3060 12GB",
+  "host_ram_gib": 32,
+  "runtime_revision": "ca1e85fe9430179831e6bc6be790c332190a3866",
+  "selected": "XL turbo + 4B language model, INT8 DiT weights",
+  "results": [
+    {
+      "model": "acestep-v15-turbo",
+      "lm": "acestep-5Hz-lm-1.7B",
+      "quantization": "none",
+      "initialization_seconds": 36.5,
+      "tracks": [
+        {
+          "profile": 0,
+          "duration_seconds": 180,
+          "wall_seconds": 64.69,
+          "playout_seconds": 175,
+          "realtime_factor": 0.37,
+          "peak_gpu_allocated_gib": 5.09
+        },
+        {
+          "profile": 1,
+          "duration_seconds": 210,
+          "wall_seconds": 67.86,
+          "playout_seconds": 205,
+          "realtime_factor": 0.331,
+          "peak_gpu_allocated_gib": 5.3
+        },
+        {
+          "profile": 2,
+          "duration_seconds": 180,
+          "wall_seconds": 59.71,
+          "playout_seconds": 175,
+          "realtime_factor": 0.341,
+          "peak_gpu_allocated_gib": 5.25
+        }
+      ],
+      "passes": true
+    },
+    {
+      "model": "acestep-v15-xl-turbo",
+      "lm": "acestep-5Hz-lm-4B",
+      "quantization": "int8_weight_only",
+      "initialization_seconds": 65.66,
+      "tracks": [
+        {
+          "profile": 0,
+          "duration_seconds": 180,
+          "wall_seconds": 96.22,
+          "playout_seconds": 175,
+          "realtime_factor": 0.55,
+          "peak_gpu_allocated_gib": 8.2
+        },
+        {
+          "profile": 1,
+          "duration_seconds": 210,
+          "wall_seconds": 106.5,
+          "playout_seconds": 205,
+          "realtime_factor": 0.519,
+          "peak_gpu_allocated_gib": 8.42
+        },
+        {
+          "profile": 2,
+          "duration_seconds": 180,
+          "wall_seconds": 92.56,
+          "playout_seconds": 175,
+          "realtime_factor": 0.529,
+          "peak_gpu_allocated_gib": 8.37
+        }
+      ],
+      "passes": true
+    }
+  ]
+}

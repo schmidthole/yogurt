@@ -1,4 +1,4 @@
-"""Generate a complete song with the same ACE-Step setup as the auditions."""
+"""Generate complete songs with a configurable, memory-conscious ACE-Step runtime."""
 
 import logging
 import os
@@ -18,10 +18,28 @@ class AceStep:
         if not torch.cuda.is_available():
             raise RuntimeError("a cuda gpu is required")
         checkpoints = os.environ.get("ACESTEP_CHECKPOINTS_DIR", "/data/checkpoints")
+        model = os.environ.get("ACESTEP_DIT_MODEL", "acestep-v15-turbo")
+        language_model = os.environ.get("ACESTEP_LM_MODEL", "acestep-5Hz-lm-0.6B")
+        quantization = os.environ.get("ACESTEP_QUANTIZATION", "none")
+        if model not in {"acestep-v15-turbo", "acestep-v15-xl-turbo"}:
+            raise ValueError("unsupported turbo model")
+        if language_model not in {
+            f"acestep-5Hz-lm-{size}" for size in ("0.6B", "1.7B", "4B")
+        }:
+            raise ValueError("unsupported music language model")
+        if quantization not in {"none", "int8_weight_only"}:
+            raise ValueError("unsupported quantization")
+        log.info(
+            "ACE-Step model=%s language_model=%s quantization=%s",
+            model,
+            language_model,
+            quantization,
+        )
         self.dit = AceStepHandler()
         status, ok = self.dit.initialize_service(
             project_root="/app",
-            config_path="acestep-v15-turbo",
+            config_path=model,
+            quantization=None if quantization == "none" else quantization,
             device="cuda",
             offload_to_cpu=True,
             offload_dit_to_cpu=True,
@@ -31,7 +49,7 @@ class AceStep:
         self.lm = LLMHandler()
         status, ok = self.lm.initialize(
             checkpoint_dir=checkpoints,
-            lm_model_path="acestep-5Hz-lm-0.6B",
+            lm_model_path=language_model,
             backend="pt",
             device="cuda",
             offload_to_cpu=True,

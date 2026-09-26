@@ -165,6 +165,14 @@ class AceStepAdapterTests(unittest.TestCase):
                     ),
                 },
             ),
+            patch.dict(
+                "os.environ",
+                {
+                    "ACESTEP_DIT_MODEL": "acestep-v15-xl-turbo",
+                    "ACESTEP_LM_MODEL": "acestep-5Hz-lm-4B",
+                    "ACESTEP_QUANTIZATION": "int8_weight_only",
+                },
+            ),
             tempfile.TemporaryDirectory() as directory,
         ):
             backend = AceStep()
@@ -174,6 +182,20 @@ class AceStepAdapterTests(unittest.TestCase):
                 self.assertEqual(destination.read_bytes(), b"complete song")
             self.assertEqual(dit.initialize_service.call_count, 1)
             self.assertEqual(lm.initialize.call_count, 1)
+            self.assertEqual(
+                dit.initialize_service.call_args.kwargs["config_path"],
+                "acestep-v15-xl-turbo",
+            )
+            self.assertEqual(
+                dit.initialize_service.call_args.kwargs["quantization"],
+                "int8_weight_only",
+            )
+            self.assertEqual(
+                lm.initialize.call_args.kwargs["lm_model_path"], "acestep-5Hz-lm-4B"
+            )
+            with patch.dict("os.environ", {"ACESTEP_DIT_MODEL": "not-a-model"}):
+                with self.assertRaisesRegex(ValueError, "unsupported turbo model"):
+                    AceStep()
             params = generate_mock.call_args.args[2]
             self.assertEqual(
                 (params.duration, params.bpm, params.shift), (180, 100, 3.0)

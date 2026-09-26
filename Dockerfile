@@ -56,7 +56,10 @@ COPY generator/ /app/generator/
 COPY stations.yml /app/stations.yml
 ENV PATH="/app/.venv/bin:$PATH" HOME=/home/yogurt PYTHONUNBUFFERED=1 \
     ACESTEP_CHECKPOINTS_DIR=/data/checkpoints HF_HOME=/data/huggingface \
-    TOKENIZERS_PARALLELISM=false
+    TOKENIZERS_PARALLELISM=false \
+    ACESTEP_DIT_MODEL=acestep-v15-xl-turbo \
+    ACESTEP_LM_MODEL=acestep-5Hz-lm-4B \
+    ACESTEP_QUANTIZATION=int8_weight_only
 HEALTHCHECK NONE
 ENTRYPOINT ["/app/generator/entrypoint.sh"]
 CMD ["python", "-m", "generator.main"]

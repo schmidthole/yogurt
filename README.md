@@ -12,7 +12,7 @@ ACE-Step full songs -> normalized flac queues -> liquidsoap -> icecast
                                                     radio macos app
 ```
 
-there is no web player, catalog api, database, or benchmark suite. add this url in [radio](https://github.com/pom11/Radio) settings after deployment:
+there is no station web player, catalog api, or database. add this url in [radio](https://github.com/pom11/Radio) settings after deployment:
 
 ```text
 http://localhost:8080/streams/night-drive.mp3
@@ -84,7 +84,7 @@ edit `stations.yml`. ids must be unique lowercase slugs. each station has a name
 
 adding a station means adding a list entry, redeploying the generator, waiting for its fallback and queue to fill, then redeploying radio. add its `/streams/<id>.mp3` url to the client. station changes are not hot-reloaded. removing a station does not delete its files; remove obsolete data manually when desired.
 
-one ACE-Step turbo model and its 0.6B music language model stay loaded across jobs, with CPU offloading for a 12GB GPU. each call generates an entire instrumental song (8 inference steps, shift 3.0), with no independently generated short segments. temporary model outputs are removed after success or failure. ffmpeg normalizes to -16 lufs / -1.5 dbtp, 48 khz stereo flac before atomic publication. liquidsoap encodes the broadcast as 192 kbps mp3.
+one ACE-Step XL turbo (4B DiT) model and its 4B music language model stay loaded across jobs, with 8-bit DiT weight quantization and CPU offloading for the RTX 3060 12GB. each call generates an entire instrumental song (8 inference steps, shift 3.0), with no independently generated short segments. temporary model outputs are removed after success or failure. ffmpeg normalizes to -16 lufs / -1.5 dbtp, 48 khz stereo flac before atomic publication. liquidsoap encodes the broadcast as 192 kbps mp3.
 
 ## provisioning another host
 
@@ -150,3 +150,41 @@ throughput guarantee. The deployed fallback library uses complete tracks from th
 profiles. The original auditions remain available separately; the original Magenta queue was
 archived during migration. See
 `scripts/ACE_STEP_AUDITIONS.md` for the reproducible audition workflow.
+
+## model sizing and performance
+
+The generator image selects `ACESTEP_DIT_MODEL=acestep-v15-xl-turbo`,
+`ACESTEP_LM_MODEL=acestep-5Hz-lm-4B`, and `ACESTEP_QUANTIZATION=int8_weight_only`.
+These environment variables can be overridden when launching the container. Supported
+DiT choices are the standard and XL turbo models; language-model sizes are 0.6B, 1.7B,
+and 4B. Quantization accepts `none` or `int8_weight_only`. CPU offloading stays enabled.
+The standalone Python adapter retains the small audition configuration as its default;
+the production Docker image explicitly selects the benchmarked larger models.
+
+Run a full-song benchmark on an empty output directory:
+
+```sh
+./scripts/run-acestep-benchmark.sh acestep-v15-xl-turbo acestep-5Hz-lm-4B int8_weight_only \
+  "$HOME/.cache/yogurt-benchmark-xl"
+```
+
+The script temporarily stops the live generator to free the GPU, uses an isolated audio
+queue, and restores the live generator on exit. It measures generation plus normalization
+for every configured profile after initialization. A candidate passes when every song takes
+at most 80% of its usable playout time (duration minus crossfade). The benchmark has a
+24GiB memory limit and a 28GiB combined memory/swap limit. It writes `results.json` alongside
+the test audio; those files are not added to the live station automatically. Results apply
+to this single-station workload, not to an arbitrary number of simultaneous stations.
+
+Measured on this host: XL + 4B took 96.22s, 106.50s, and 92.56s for the three
+180/210/180-second profiles, including normalization, after 65.66s initialization.
+Peak allocated GPU tensor memory was 8.42GiB (not total driver-reported VRAM).
+See `benchmarks/rtx3060.json` for the baseline comparison and individual results.
+
+The local production generator also uses the benchmark's 24GiB memory and 28GiB
+combined memory/swap limits. Lord does not currently encode these limits in its YAML;
+after a Lord redeploy, reapply them on the Docker host:
+
+```sh
+docker update --memory 24g --memory-swap 28g yogurt-generator
+```

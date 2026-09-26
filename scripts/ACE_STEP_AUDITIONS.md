@@ -34,7 +34,7 @@ Outputs are in `~/Music/yogurt-auditions`: FLAC songs, JSON generation settings 
 and original model outputs in `raw/`. Existing completed FLAC files are skipped on reruns.
 The three prompts use 85, 100, and 118 BPM and request complete arrangements with endings.
 
-The production backend now uses these same model settings. `stations.yml` now holds three dramatic lo-fi synthwave soundscape
+The production backend now uses the larger benchmarked XL/4B configuration; this script retains the original smaller audition settings. `stations.yml` now holds three dramatic lo-fi synthwave soundscape
 profiles; production varies the seed for each complete song and publishes it
 through the existing normalization and atomic queue. The audition runner remains separate
 and does not publish its outputs to the station. Its GPU use temporarily pauses production.
