@@ -3,6 +3,104 @@ crossfade_seconds: 5
 buffer_low_seconds: 1800
 buffer_target_seconds: 3600
 stations:
-  - id: night-drive
-    name: night drive
-    prompt: atmospheric instrumental synthwave, warm analog synthesizers, restrained drums, deep soft bass, slow evolving pads, no vocals
+- id: night-drive
+  name: night drive
+  prompt: Instrumental dramatic cinematic synthwave lo-fi soundscape. Dark minor-key analog pads, sparse
+    half-time drums, tape-worn arpeggios, deep sub bass, slow tension and expansive atmosphere.
+  songs:
+  - prompt: 'Instrumental dramatic synthwave lo-fi soundscape, 82 BPM, A minor. Vast dark analog pads,
+      tape-warped arpeggios, deep sustained sub bass, distant half-time drum-machine hits and a sparse
+      aching synth motif. Gritty cassette saturation, soft hiss, hazy reverb and a brooding neon-noir
+      atmosphere. Full cinematic arc: distant opening, slow rising tension, thunderous synth swell, suspended
+      breakdown and fading unresolved outro. Spacious, melancholic and ominous; synth-only instrumentation.'
+    seconds: 180
+    bpm: 82
+    key: A minor
+  - prompt: 'Instrumental cinematic dark synthwave lo-fi soundscape, 74 BPM, D minor. Rain-soaked dystopian
+      atmosphere, detuned analog strings, low pulsing synth bass, muffled sparse half-time beats and fragile
+      descending synth notes. Worn tape flutter, grainy saturation and long dark reverb. Slow dramatic
+      harmonic movement with plenty of space. Complete piece: misty ambient intro, gathering tension,
+      towering emotional pad crescendo, stripped-back afterglow and a long atmospheric ending.'
+    seconds: 210
+    bpm: 74
+    key: D minor
+  - prompt: 'Instrumental dramatic lo-fi synthwave soundscape, 90 BPM, C minor. A desolate midnight sci-fi
+      score with ominous analog drones, restrained sequenced arpeggios, heavy sub-bass pulses, dusty half-time
+      electronic drums and a distant haunting synth lead. Cassette haze, dark roomy echoes and textured
+      distortion. Slow-burn cinematic arrangement: quiet tension, widening layers, one powerful melodic
+      climax, dissolving percussion and an expansive fading outro. Sparse, serious and bittersweet.'
+    seconds: 180
+    bpm: 90
+    key: C minor
+  - prompt: 'Russian melodic street rap, 140 BPM, B minor, slow half-time feel. Minimal four-note
+      felt-piano loop, deep rounded 808 bass, dry kick and snare, restrained ticking hi-hats,
+      faint dark pad. Intimate low male voice, measured conversational rap verses, quietly
+      sung emotional hook with sustained vowels and subtle vocal doubles. Clear Russian
+      diction, weary tenderness and restrained resolve. Spacious nocturnal mix, vocal upfront.
+      Short intro, two verses, recurring hook, sparse bridge, fading piano outro.'
+    seconds: 180
+    bpm: 140
+    key: B minor
+    vocal_language: ru
+    lyrics: |
+      [Intro]
+
+      [Verse 1]
+      Последний трамвай растворился вдали,
+      Мы столько друг другу сказать не смогли.
+      В кармане записка, на сгибе потёрта,
+      Твой почерк хранит то, что память не стёрла.
+      На кухне у мамы не гаснет окно,
+      Я редко звоню, но мне это дано:
+      Вернуться без повода, сесть у порога,
+      Сказать, что устал, что трудна мне дорога.
+      Во дворе всё тот же качается клён,
+      Только я стал тише, только двор не спит.
+      Друг спросил: «Ты как?» — я ответил: «Нормально»,
+      А потом мы молча простояли до зари.
+
+      [Chorus]
+      Оставь мне свет, я скоро буду дома,
+      Сквозь мокрый снег узнаю этот двор.
+      Мне тишина твоя давно знакома,
+      Давай начнём неспешный разговор.
+      Оставь мне свет, без громких обещаний,
+      Я научусь не прятать боль в словах.
+      Меж нами столько долгого молчанья,
+      Но тёплый свет ещё в твоих окнах.
+
+      [Verse 2]
+      Я помню, как мы делили один билет,
+      Смеялись, когда на ужин был только хлеб.
+      Хотели уехать туда, где никто не знает,
+      Как тесно бывает в квартире в начале мая.
+      Теперь у меня есть ключи и пустой салон,
+      Но я всё ловлю твой голос сквозь тихий фон.
+      Не буду искать виноватых в чужих советах,
+      Я слишком привык уходить, не давая ответа.
+      И если однажды ты спросишь, зачем пришёл,
+      Я просто скажу: «Без тебя мне нехорошо».
+      Не стану клясться, что завтра всё станет легче,
+      Но я остаюсь. Мне сегодня сказать больше нечего.
+
+      [Chorus]
+      Оставь мне свет, я скоро буду дома,
+      Сквозь мокрый снег узнаю этот двор.
+      Мне тишина твоя давно знакома,
+      Давай начнём неспешный разговор.
+      Оставь мне свет, без громких обещаний,
+      Я научусь не прятать боль в словах.
+      Меж нами столько долгого молчанья,
+      Но тёплый свет ещё в твоих окнах.
+
+      [Bridge]
+      На лестнице тихо. Четыре утра.
+      Я здесь. Если можно, открой мне сама.
+
+      [Chorus]
+      Оставь мне свет, я скоро буду дома,
+      Сквозь мокрый снег узнаю этот двор.
+      Мне тишина твоя давно знакома,
+      Давай начнём неспешный разговор.
+
+      [Outro]

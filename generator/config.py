@@ -6,10 +6,21 @@ import yaml
 
 
 @dataclass(frozen=True)
+class Song:
+    prompt: str
+    seconds: int
+    bpm: int
+    key: str
+    lyrics: str = ""
+    vocal_language: str = "unknown"
+
+
+@dataclass(frozen=True)
 class Station:
     id: str
     name: str
     prompt: str
+    songs: tuple[Song, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -39,9 +50,15 @@ def load_config(path: Path) -> Config:
     if not isinstance(raw["stations"], list) or not raw["stations"]:
         raise ValueError("at least one station is required")
     for item in raw["stations"]:
-        if not isinstance(item, dict) or set(item) != {"id", "name", "prompt"}:
+        if not isinstance(item, dict) or set(item) not in (
+            {"id", "name", "prompt"},
+            {"id", "name", "prompt", "songs"},
+        ):
             raise ValueError("invalid station fields")
-        if any(not isinstance(v, str) or not v.strip() for v in item.values()):
+        if any(
+            not isinstance(v, str) or not v.strip()
+            for v in (item[k] for k in ("id", "name", "prompt"))
+        ):
             raise ValueError("station fields must be nonempty strings")
         if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", item["id"]):
             raise ValueError("invalid station id")
@@ -49,5 +66,44 @@ def load_config(path: Path) -> Config:
             raise ValueError("duplicate station id")
         if any(ord(c) < 32 for c in item["name"]):
             raise ValueError("invalid station name")
-        stations.append(Station(**item))
+        songs = []
+        if "songs" in item:
+            if not isinstance(item["songs"], list) or not item["songs"]:
+                raise ValueError("songs must be a nonempty list")
+            for song in item["songs"]:
+                if (
+                    not isinstance(song, dict)
+                    or not {
+                        "prompt",
+                        "seconds",
+                        "bpm",
+                        "key",
+                    }
+                    <= set(song)
+                    or set(song) - set(Song.__dataclass_fields__)
+                ):
+                    raise ValueError("invalid song fields")
+                if any(
+                    not isinstance(song[k], str) or not song[k].strip()
+                    for k in ("prompt", "key")
+                ):
+                    raise ValueError("invalid song text")
+                if type(song["seconds"]) is not int or not 10 <= song["seconds"] <= 480:
+                    raise ValueError("song seconds must be between 10 and 480")
+                if raw["crossfade_seconds"] * 2 >= song["seconds"]:
+                    raise ValueError("crossfade exceeds song duration")
+                if type(song["bpm"]) is not int or not 30 <= song["bpm"] <= 300:
+                    raise ValueError("invalid song bpm")
+                lyrics = song.get("lyrics", "")
+                language = song.get("vocal_language", "unknown")
+                if not isinstance(lyrics, str) or len(lyrics) > 4096:
+                    raise ValueError("lyrics must be text up to 4096 characters")
+                if not isinstance(language, str) or not re.fullmatch(
+                    r"[a-z]{2}|unknown", language
+                ):
+                    raise ValueError("invalid vocal language")
+                if language != "unknown" and not lyrics.strip():
+                    raise ValueError("vocal language requires lyrics")
+                songs.append(Song(**song))
+        stations.append(Station(item["id"], item["name"], item["prompt"], tuple(songs)))
     return Config(**{**raw, "stations": tuple(stations)})

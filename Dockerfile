@@ -36,7 +36,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir pyyaml==6.0.2
 COPY generator/ /app/generator/
 COPY stations.yml /app/stations.yml
-ENV MAGENTA_HOME=/data/magenta PYTHONUNBUFFERED=1 XLA_PYTHON_CLIENT_PREALLOCATE=false
+ENV PYTHONUNBUFFERED=1
 ENTRYPOINT ["/app/generator/entrypoint.sh"]
 CMD ["python", "-m", "generator.main"]
 
@@ -44,8 +44,22 @@ FROM generator-base AS generator-test
 COPY tests/test_generator.py /app/tests/test_generator.py
 ENTRYPOINT ["python", "-m", "unittest", "discover", "-s", "tests", "-v"]
 
-FROM generator-base AS generator
-COPY generator/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-ENV HOME=/home/yogurt
-RUN mkdir -p /home/yogurt/.cache && chown -R 1000:1000 /home/yogurt
+# Build this pinned upstream runtime with `make ace-runtime` before deployment.
+FROM yogurt-acestep:ca1e85fe9430179831e6bc6be790c332190a3866 AS generator
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends util-linux \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -g 1000 yogurt && useradd -u 1000 -g yogurt -m yogurt \
+    && rmdir /app/checkpoints && ln -s /data/checkpoints /app/checkpoints
+WORKDIR /app
+COPY generator/ /app/generator/
+COPY stations.yml /app/stations.yml
+ENV PATH="/app/.venv/bin:$PATH" HOME=/home/yogurt PYTHONUNBUFFERED=1 \
+    ACESTEP_CHECKPOINTS_DIR=/data/checkpoints HF_HOME=/data/huggingface \
+    TOKENIZERS_PARALLELISM=false \
+    ACESTEP_DIT_MODEL=acestep-v15-xl-turbo \
+    ACESTEP_LM_MODEL=acestep-5Hz-lm-4B \
+    ACESTEP_QUANTIZATION=int8_weight_only
+HEALTHCHECK NONE
+ENTRYPOINT ["/app/generator/entrypoint.sh"]
+CMD ["python", "-m", "generator.main"]

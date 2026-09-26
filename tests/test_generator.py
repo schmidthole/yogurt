@@ -106,42 +106,155 @@ class GeneratorTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     load_config(path)
 
+    def test_invalid_song_profiles_rejected(self):
+        import copy
 
-class MagentaAdapterTests(unittest.TestCase):
-    def test_model_reuse_and_segment_context_isolation(self):
+        import yaml
+
+        original = yaml.safe_load(Path("stations.yml").read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "stations.yml"
+            for field, value in (
+                ("seconds", 481),
+                ("seconds", True),
+                ("bpm", 0),
+                ("key", ""),
+                ("lyrics", 123),
+                ("lyrics", "я" * 4097),
+                ("vocal_language", "russian"),
+                ("vocal_language", "ru"),
+            ):
+                bad = copy.deepcopy(original)
+                bad["stations"][0]["songs"][0][field] = value
+                path.write_text(yaml.safe_dump(bad))
+                with self.assertRaises(ValueError):
+                    load_config(path)
+
+
+class AceStepAdapterTests(unittest.TestCase):
+    def test_full_songs_reuse_models_and_cleanup_outputs(self):
         import sys
         from types import SimpleNamespace
         from unittest.mock import MagicMock
 
-        from generator.mrt import Magenta
+        from generator.acestep import AceStep
 
-        model = MagicMock()
-        model.embed_style.return_value = "embedding"
-        model.generate.side_effect = [
-            (SimpleNamespace(samples="audio"), f"state-{index}") for index in range(6)
-        ]
-        factory = MagicMock(return_value=model)
-        writer = MagicMock()
-        with patch.dict(
-            sys.modules,
-            {
-                "jax": SimpleNamespace(
-                    devices=lambda: [SimpleNamespace(platform="gpu")]
-                ),
-                "magenta_rt": SimpleNamespace(MagentaRT2Jax=factory),
-                "soundfile": SimpleNamespace(SoundFile=writer),
-            },
+        dit, lm = MagicMock(), MagicMock()
+        dit.initialize_service.return_value = ("ready", True)
+        lm.initialize.return_value = ("ready", True)
+        output_dirs = []
+
+        def generate(*args, save_dir):
+            output_dirs.append(Path(save_dir))
+            path = Path(save_dir) / "song.wav"
+            path.write_bytes(b"complete song")
+            return SimpleNamespace(
+                success=True, audios=[{"path": str(path)}], error=None
+            )
+
+        generate_mock = MagicMock(side_effect=generate)
+        with (
+            patch.dict(
+                sys.modules,
+                {
+                    "torch": SimpleNamespace(
+                        cuda=SimpleNamespace(is_available=lambda: True)
+                    ),
+                    "acestep.handler": SimpleNamespace(AceStepHandler=lambda: dit),
+                    "acestep.llm_inference": SimpleNamespace(LLMHandler=lambda: lm),
+                    "acestep.inference": SimpleNamespace(
+                        GenerationParams=SimpleNamespace,
+                        GenerationConfig=SimpleNamespace,
+                        generate_music=generate_mock,
+                    ),
+                },
+            ),
+            patch.dict(
+                "os.environ",
+                {
+                    "ACESTEP_DIT_MODEL": "acestep-v15-xl-turbo",
+                    "ACESTEP_LM_MODEL": "acestep-5Hz-lm-4B",
+                    "ACESTEP_QUANTIZATION": "int8_weight_only",
+                },
+            ),
+            tempfile.TemporaryDirectory() as directory,
         ):
-            backend = Magenta()
-            backend.generate("ambient", 10, Path("first.wav"))
-            backend.generate("ambient", 10, Path("second.wav"))
-        self.assertEqual(factory.call_count, 1)
-        self.assertEqual(model.embed_style.call_count, 1)
-        calls = model.generate.call_args_list
-        self.assertIsNone(calls[0].kwargs["state"])
-        self.assertEqual(calls[1].kwargs["state"], "state-0")
-        self.assertIsNone(calls[3].kwargs["state"])
-        self.assertEqual(sum(c.kwargs["frames"] for c in calls[:3]), 250)
+            backend = AceStep()
+            for index in range(2):
+                destination = Path(directory) / f"{index}.wav"
+                backend.generate("synthwave", 180, destination, bpm=100, key="A minor")
+                self.assertEqual(destination.read_bytes(), b"complete song")
+            self.assertEqual(dit.initialize_service.call_count, 1)
+            self.assertEqual(lm.initialize.call_count, 1)
+            self.assertEqual(
+                dit.initialize_service.call_args.kwargs["config_path"],
+                "acestep-v15-xl-turbo",
+            )
+            self.assertEqual(
+                dit.initialize_service.call_args.kwargs["quantization"],
+                "int8_weight_only",
+            )
+            self.assertEqual(
+                lm.initialize.call_args.kwargs["lm_model_path"], "acestep-5Hz-lm-4B"
+            )
+            with patch.dict("os.environ", {"ACESTEP_DIT_MODEL": "not-a-model"}):
+                with self.assertRaisesRegex(ValueError, "unsupported turbo model"):
+                    AceStep()
+            params = generate_mock.call_args.args[2]
+            self.assertEqual(
+                (params.duration, params.bpm, params.shift), (180, 100, 3.0)
+            )
+            self.assertTrue(params.instrumental)
+            self.assertTrue(generate_mock.call_args.args[3].use_random_seed)
+            self.assertFalse(any(p.exists() for p in output_dirs))
+            backend.generate(
+                "Russian melodic rap",
+                180,
+                destination,
+                lyrics="[Verse]\nГород затих",
+                vocal_language="ru",
+            )
+            vocal = generate_mock.call_args.args[2]
+            self.assertFalse(vocal.instrumental)
+            self.assertEqual(vocal.lyrics, "[Verse]\nГород затих")
+            self.assertEqual(vocal.vocal_language, "ru")
+            self.assertFalse(vocal.use_cot_language)
+            generate_mock.side_effect = lambda *a, **kw: SimpleNamespace(
+                success=False, audios=[], error="inference failed"
+            )
+            with self.assertRaisesRegex(RuntimeError, "inference failed"):
+                backend.generate("synthwave", 180, Path(directory) / "failed.wav")
+            self.assertFalse((Path(directory) / "failed.wav").exists())
+
+    def test_song_profile_controls_and_duration_validation(self):
+        from dataclasses import replace
+        from unittest.mock import MagicMock
+
+        from generator.config import Song
+
+        song = Song("full song", 210, 85, "D minor", "[Verse]\nГород затих", "ru")
+        cfg = replace(config(), stations=(Station("one", "one", "ambient", (song,)),))
+        with tempfile.TemporaryDirectory() as directory:
+            backend = MagicMock()
+            backend.generate.side_effect = (
+                lambda prompt, seconds, path, **kw: path.write_bytes(b"audio")
+            )
+            worker = Generator(
+                cfg, Path(directory), backend, lambda _: 210, shutil.copyfile
+            )
+            worker.prepare()
+            self.assertTrue(worker.step())
+            self.assertEqual(backend.generate.call_args.args[:2], ("full song", 210))
+            self.assertEqual(
+                backend.generate.call_args.kwargs,
+                {
+                    "bpm": 85,
+                    "key": "D minor",
+                    "lyrics": "[Verse]\nГород затих",
+                    "vocal_language": "ru",
+                },
+            )
+            self.assertEqual(worker.levels(), {"one": 209})
 
 
 @unittest.skipUnless(
