@@ -90,7 +90,7 @@ make generator
 
 ## station configuration
 
-edit `stations.yml`. ids must be unique lowercase slugs. each station has a name and prompt. complete songs default to 180 seconds with five-second crossfades. optional `songs` profiles specify `prompt`, `seconds` (10–480), `bpm` (30–300), and `key`. the generator randomly selects a profile and a fresh seed per song. the supplied three profiles stay within dramatic cinematic synthwave lo-fi soundscapes: 74–90 BPM, minor keys, sparse half-time drums, tape texture, dark pads and slow tension/release. electric-piano lounge and upbeat polished synth-pop cues are excluded. `segment_seconds` remains the duration for stations without profiles. generation refills below 30 minutes and stops at 60 minutes of ready audio per station. the scheduler selects the least-buffered station that needs refilling.
+edit `stations.yml`. ids must be unique lowercase slugs. each station has a name and prompt. complete songs default to 180 seconds with five-second crossfades. optional `songs` profiles require `prompt` and `seconds` (10–480). `bpm` (30–300) and `key` are optional overrides; omit them to let ACE-Step choose musical metadata for each render. the generator randomly selects a profile and a fresh seed per song. supplied profiles use broad mood/style descriptions: three dramatic cinematic synthwave lo-fi themes, one Russian melodic hip-hop vocal theme and one female-vocal melodic house theme. tempo, key, meter, exact instrumentation and arrangement are left open. automatic choices can repeat and do not guarantee novelty; the vocal profiles still use fixed original lyrics. `segment_seconds` remains the duration for stations without profiles. generation refills below 30 minutes and stops at 60 minutes of ready audio per station. the scheduler selects the least-buffered station that needs refilling.
 
 adding a station means adding a list entry, redeploying the generator, waiting for its fallback and queue to fill, then redeploying radio. add its `/streams/<id>.mp3` url to the client. station changes are not hot-reloaded. removing a station does not delete its files; remove obsolete data manually when desired.
 
@@ -199,7 +199,11 @@ after a Lord redeploy, reapply them on the Docker host:
 docker update --memory 24g --memory-swap 28g yogurt-generator
 ```
 
-The Night Drive mix includes three instrumental synthwave profiles and one Russian
-melodic hip-hop profile with original vocals. See [prompt research and vocal
+The Night Drive mix includes three instrumental synthwave profiles, one Russian
+melodic hip-hop profile and one English female-vocal melodic house profile. See [prompt research and vocal
 configuration](scripts/RUSSIAN_HIPHOP.md). Song profiles may supply `lyrics` and
 `vocal_language` (for example `ru`); omitted lyrics preserve instrumental output.
+
+The house theme is the fifth selectable profile (20% expected share, with uniform
+random selection). It uses original English lyrics and a 210-second duration,
+with automatic tempo and key. See [house prompt research](scripts/MELODIC_HOUSE.md).

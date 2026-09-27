@@ -17,8 +17,8 @@ type Song struct {
 	VocalLanguage string `yaml:"vocal_language,omitempty"`
 	Prompt        string `yaml:"prompt"`
 	Seconds       int    `yaml:"seconds"`
-	BPM           int    `yaml:"bpm"`
-	Key           string `yaml:"key"`
+	BPM           *int   `yaml:"bpm,omitempty"`
+	Key           string `yaml:"key,omitempty"`
 }
 
 type Station struct {
@@ -68,7 +68,7 @@ func loadConfig(path string) (Config, error) {
 			if utf8.RuneCountInString(song.Lyrics) > 4096 || (song.VocalLanguage != "" && !vocalLanguage.MatchString(song.VocalLanguage)) || (song.VocalLanguage != "" && song.VocalLanguage != "unknown" && strings.TrimSpace(song.Lyrics) == "") {
 				return c, fmt.Errorf("invalid vocal profile for station: %s", s.ID)
 			}
-			if strings.TrimSpace(song.Prompt) == "" || strings.TrimSpace(song.Key) == "" || song.Seconds < 10 || song.Seconds > 480 || song.BPM < 30 || song.BPM > 300 || c.Crossfade*2 >= song.Seconds {
+			if strings.TrimSpace(song.Prompt) == "" || song.Seconds < 10 || song.Seconds > 480 || (song.BPM != nil && (*song.BPM < 30 || *song.BPM > 300)) || c.Crossfade*2 >= song.Seconds {
 				return c, fmt.Errorf("invalid song profile for station: %s", s.ID)
 			}
 		}

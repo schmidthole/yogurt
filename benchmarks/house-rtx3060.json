@@ -1,0 +1,14 @@
+{
+  "initialization_seconds": 69.27,
+  "generation_seconds": 127.7,
+  "duration_seconds": 210,
+  "realtime_factor": 0.623,
+  "passes": true,
+  "date": "2026-09-27",
+  "profile": "Female-vocal melodic progressive house",
+  "model": "acestep-v15-xl-turbo",
+  "lm": "acestep-5Hz-lm-4B",
+  "model_selected_bpm": 125,
+  "model_selected_key": "E major",
+  "note": "Metadata is model-selected, not independently measured; listening review pending."
+}

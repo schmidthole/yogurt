@@ -1,8 +1,8 @@
 # Russian melodic hip-hop profile
 
 The fourth Night Drive profile adds a vocal song to the same station. Profiles
-are selected uniformly at random, so its expected share is 25% of generated
-songs; this is not a strict every-fourth-song schedule. Existing synthwave
+are selected uniformly at random, so its expected share is 20% of generated
+songs; this is not a strict every-fifth-song schedule. Existing synthwave
 profiles remain instrumental.
 
 ## Style research and production choices
@@ -21,10 +21,12 @@ sustained vowels, economical beats, and urban relationship/loyalty themes.
   describes concise, minimalist hip-hop with trap beats and alternating rap
   and quiet singing.
 
-Our arrangement choices are 140 BPM with a slow half-time feel, B minor,
-a sparse felt-piano motif, rounded 808 bass, dry drums, restrained hats,
-a faint pad, and an intimate low male vocal. These are production choices
-for this station, not claims that every MACAN song uses this tempo or palette.
+The current caption keeps minimalist instrumentation, emotional male vocals,
+conversational rap, a heartfelt melodic hook, and a nocturnal mood. Tempo, key,
+meter, exact instruments, vocal register, and bar-by-bar arrangement are left
+open so ACE-Step can choose a different musical setting per render.
+The original trial used 140 BPM half-time, B minor, piano and 808 bass;
+those were station production choices, not defining traits of every MACAN song.
 The generation caption specifies musical traits without an artist name or
 reference recording. The Russian lyrics are original, about returning home,
 regret, and honest conversation; they do not quote an existing song.
@@ -34,7 +36,7 @@ regret, and honest conversation; they do not quote an existing song.
 The [official guide](https://github.com/ace-step/ACE-Step-1.5/blob/main/docs/en/Tutorial.md)
 separates overall sound in the caption from song structure and words in the
 lyrics. Keep section labels short, write lyrics in Cyrillic, and explicitly
-set `vocal_language: ru`. The caption is 504 characters. Lyrics stay below
+set `vocal_language: ru`. Lyrics stay below
 ACE-Step's 4096-character limit. We disable language rewriting for explicit
 languages, retain the XL/4B models and eight-step generation, and derive
 instrumental mode from whether the profile supplies nonblank lyrics.
@@ -52,3 +54,12 @@ model initialization). The ratio to 175 seconds of usable playout is 0.64,
 passing the existing 0.8 threshold. This is one timing sample, not a guarantee
 for every render. Duration and stream decoding passed; pronunciation and
 musical quality still require listening. Preview: `http://localhost:8082/`.
+
+## Looser generation (2026-09-27)
+
+Removed exact BPM/key overrides from all four profiles and shortened the captions.
+The adapter enables metadata generation with unset tempo/key/meter, while preserving
+an explicitly configured BPM or key when supplied. Random seeds were already enabled.
+Duration stays fixed for queue accounting and storage bounds. The prior benchmark
+above describes the original constrained profile; listen to new renders to assess
+whether the wider musical choices improve variety. Lyrics remain fixed.

@@ -5,42 +5,26 @@ buffer_target_seconds: 3600
 stations:
 - id: night-drive
   name: night drive
-  prompt: Instrumental dramatic cinematic synthwave lo-fi soundscape. Dark minor-key analog pads, sparse
-    half-time drums, tape-worn arpeggios, deep sub bass, slow tension and expansive atmosphere.
+  prompt: Instrumental dramatic cinematic synthwave lo-fi soundscape. Expressive electronic textures, emotional
+    melodies and a brooding nocturnal atmosphere.
   songs:
-  - prompt: 'Instrumental dramatic synthwave lo-fi soundscape, 82 BPM, A minor. Vast dark analog pads,
-      tape-warped arpeggios, deep sustained sub bass, distant half-time drum-machine hits and a sparse
-      aching synth motif. Gritty cassette saturation, soft hiss, hazy reverb and a brooding neon-noir
-      atmosphere. Full cinematic arc: distant opening, slow rising tension, thunderous synth swell, suspended
-      breakdown and fading unresolved outro. Spacious, melancholic and ominous; synth-only instrumentation.'
+  - prompt: 'Instrumental dramatic synthwave lo-fi. Brooding neon-noir atmosphere, expressive
+      analog synths, deep bass and worn tape texture. Spacious and emotionally charged,
+      with an evolving melody and a cinematic sense of movement.'
     seconds: 180
-    bpm: 82
-    key: A minor
-  - prompt: 'Instrumental cinematic dark synthwave lo-fi soundscape, 74 BPM, D minor. Rain-soaked dystopian
-      atmosphere, detuned analog strings, low pulsing synth bass, muffled sparse half-time beats and fragile
-      descending synth notes. Worn tape flutter, grainy saturation and long dark reverb. Slow dramatic
-      harmonic movement with plenty of space. Complete piece: misty ambient intro, gathering tension,
-      towering emotional pad crescendo, stripped-back afterglow and a long atmospheric ending.'
+  - prompt: 'Instrumental atmospheric synthwave lo-fi. Rain-soaked nocturnal mood, hazy
+      electronics and intimate melancholy. Restrained but expressive, with room for
+      unexpected harmonies, shifting textures and moments of stillness.'
     seconds: 210
-    bpm: 74
-    key: D minor
-  - prompt: 'Instrumental dramatic lo-fi synthwave soundscape, 90 BPM, C minor. A desolate midnight sci-fi
-      score with ominous analog drones, restrained sequenced arpeggios, heavy sub-bass pulses, dusty half-time
-      electronic drums and a distant haunting synth lead. Cassette haze, dark roomy echoes and textured
-      distortion. Slow-burn cinematic arrangement: quiet tension, widening layers, one powerful melodic
-      climax, dissolving percussion and an expansive fading outro. Sparse, serious and bittersweet.'
+  - prompt: 'Instrumental cinematic synthwave lo-fi. A desolate science-fiction landscape,
+      gritty electronic textures and dramatic emotional contrasts. Haunting, immersive
+      and bittersweet, with a distinctive melodic identity.'
     seconds: 180
-    bpm: 90
-    key: C minor
-  - prompt: 'Russian melodic street rap, 140 BPM, B minor, slow half-time feel. Minimal four-note
-      felt-piano loop, deep rounded 808 bass, dry kick and snare, restrained ticking hi-hats,
-      faint dark pad. Intimate low male voice, measured conversational rap verses, quietly
-      sung emotional hook with sustained vowels and subtle vocal doubles. Clear Russian
-      diction, weary tenderness and restrained resolve. Spacious nocturnal mix, vocal upfront.
-      Short intro, two verses, recurring hook, sparse bridge, fading piano outro.'
+  - prompt: 'Russian melodic street rap with minimalist instrumentation and emotional male
+      vocals. Conversational rap flows into a heartfelt melodic hook. Understated bass
+      and drums leave space for the voice and a memorable melodic accompaniment.
+      Intimate, melancholic and nocturnal, with clear Russian diction and sincere delivery.'
     seconds: 180
-    bpm: 140
-    key: B minor
     vocal_language: ru
     lyrics: |
       [Intro]
@@ -102,5 +86,57 @@ stations:
       Сквозь мокрый снег узнаю этот двор.
       Мне тишина твоя давно знакома,
       Давай начнём неспешный разговор.
+
+      [Outro]
+  - prompt: 'Melodic progressive house with expressive female vocals. Clear luminous upper
+      register, agile phrasing, intimate verses opening into an emotionally soaring hook.
+      Warm rolling bass, steady four-on-the-floor groove, shimmering evolving synth motifs
+      and spacious atmospheric harmonies. Bittersweet yet hopeful, hypnotic forward motion
+      with gradual tension and release. The voice and instrumental melody answer each other;
+      leave room for the groove to unfold. Warm, detailed production and clear vocals.'
+    seconds: 210
+    vocal_language: en
+    lyrics: |
+      [Intro]
+
+      [Verse 1]
+      The station clock has lost a minute
+      Your coat is folded on my knees
+      A waking town outside the window
+      And all our words between the seats
+
+      [Pre-Chorus]
+      You touch the glass, the fields go by
+      I catch your face against the sky
+
+      [Chorus]
+      We don't have to know where we're going
+      Let the morning find us here
+      Every mile, the distance opens
+      You are near, you are near
+
+      [Instrumental Break]
+
+      [Verse 2]
+      You draw a circle in the window
+      Then watch it vanish in the heat
+      I used to need a map for everything
+      Now there's a ticket at my feet
+
+      [Chorus]
+      We don't have to know where we're going
+      Let the morning find us here
+      Every mile, the distance opens
+      You are near, you are near
+
+      [Bridge]
+      For once I leave the question open
+      Your hand is warm inside my own
+
+      [Chorus]
+      We don't have to know where we're going
+      Let the morning find us here
+      Every mile, the distance opens
+      You are near, you are near
 
       [Outro]

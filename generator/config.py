@@ -9,8 +9,8 @@ import yaml
 class Song:
     prompt: str
     seconds: int
-    bpm: int
-    key: str
+    bpm: int | None = None
+    key: str = ""
     lyrics: str = ""
     vocal_language: str = "unknown"
 
@@ -76,8 +76,6 @@ def load_config(path: Path) -> Config:
                     or not {
                         "prompt",
                         "seconds",
-                        "bpm",
-                        "key",
                     }
                     <= set(song)
                     or set(song) - set(Song.__dataclass_fields__)
@@ -85,15 +83,18 @@ def load_config(path: Path) -> Config:
                     raise ValueError("invalid song fields")
                 if any(
                     not isinstance(song[k], str) or not song[k].strip()
-                    for k in ("prompt", "key")
+                    for k in ("prompt",)
                 ):
                     raise ValueError("invalid song text")
                 if type(song["seconds"]) is not int or not 10 <= song["seconds"] <= 480:
                     raise ValueError("song seconds must be between 10 and 480")
                 if raw["crossfade_seconds"] * 2 >= song["seconds"]:
                     raise ValueError("crossfade exceeds song duration")
-                if type(song["bpm"]) is not int or not 30 <= song["bpm"] <= 300:
+                bpm = song.get("bpm")
+                if bpm is not None and (type(bpm) is not int or not 30 <= bpm <= 300):
                     raise ValueError("invalid song bpm")
+                if not isinstance(song.get("key", ""), str):
+                    raise ValueError("invalid song key")
                 lyrics = song.get("lyrics", "")
                 language = song.get("vocal_language", "unknown")
                 if not isinstance(lyrics, str) or len(lyrics) > 4096:

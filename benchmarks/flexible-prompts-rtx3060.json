@@ -1,0 +1,28 @@
+{
+  "initialization_seconds": 65.35,
+  "tracks": [
+    {
+      "profile": 0,
+      "duration_seconds": 180,
+      "generation_seconds": 105.32,
+      "realtime_factor": 0.602,
+      "model_selected_bpm": 100,
+      "model_selected_key": "D minor"
+    },
+    {
+      "profile": 3,
+      "duration_seconds": 180,
+      "generation_seconds": 120.92,
+      "realtime_factor": 0.691,
+      "model_selected_bpm": 40,
+      "model_selected_key": "C minor"
+    }
+  ],
+  "passes": true,
+  "date": "2026-09-27",
+  "model": "acestep-v15-xl-turbo",
+  "lm": "acestep-5Hz-lm-4B",
+  "quantization": "int8_weight_only",
+  "gpu": "RTX 3060 12GB",
+  "note": "Model-selected metadata, not independently measured audio tempo/key; musical variety requires listening."
+}

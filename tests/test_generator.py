@@ -106,6 +106,29 @@ class GeneratorTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     load_config(path)
 
+    def test_optional_music_metadata(self):
+        import yaml
+
+        original = yaml.safe_load(Path("stations.yml").read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "stations.yml"
+            for fields in (
+                {},
+                {"bpm": None, "key": ""},
+                {"bpm": 95},
+                {"key": "E minor"},
+                {"bpm": 95, "key": "E minor"},
+            ):
+                original["stations"][0]["songs"][0] = {
+                    "prompt": "ambient",
+                    "seconds": 180,
+                    **fields,
+                }
+                path.write_text(yaml.safe_dump(original))
+                song = load_config(path).stations[0].songs[0]
+                self.assertEqual(song.bpm, fields.get("bpm"))
+                self.assertEqual(song.key, fields.get("key", ""))
+
     def test_invalid_song_profiles_rejected(self):
         import copy
 
@@ -118,7 +141,9 @@ class GeneratorTests(unittest.TestCase):
                 ("seconds", 481),
                 ("seconds", True),
                 ("bpm", 0),
-                ("key", ""),
+                ("key", 123),
+                ("bpm", True),
+                ("bpm", 301),
                 ("lyrics", 123),
                 ("lyrics", "я" * 4097),
                 ("vocal_language", "russian"),
@@ -205,6 +230,8 @@ class AceStepAdapterTests(unittest.TestCase):
                 (params.duration, params.bpm, params.shift), (180, 100, 3.0)
             )
             self.assertTrue(params.instrumental)
+            self.assertEqual(params.keyscale, "A minor")
+            self.assertTrue(params.use_cot_metas)
             self.assertTrue(generate_mock.call_args.args[3].use_random_seed)
             self.assertFalse(any(p.exists() for p in output_dirs))
             backend.generate(
@@ -219,6 +246,10 @@ class AceStepAdapterTests(unittest.TestCase):
             self.assertEqual(vocal.lyrics, "[Verse]\nГород затих")
             self.assertEqual(vocal.vocal_language, "ru")
             self.assertFalse(vocal.use_cot_language)
+            self.assertIsNone(vocal.bpm)
+            self.assertEqual(vocal.keyscale, "")
+            self.assertEqual(vocal.timesignature, "")
+            self.assertTrue(vocal.use_cot_metas)
             generate_mock.side_effect = lambda *a, **kw: SimpleNamespace(
                 success=False, audios=[], error="inference failed"
             )

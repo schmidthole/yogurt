@@ -78,13 +78,13 @@ class AceStep:
             use_cot_language=bool(lyrics.strip()) and vocal_language == "unknown",
             bpm=bpm,
             keyscale=key,
-            timesignature="4",
+            timesignature="",
             duration=seconds,
             inference_steps=8,
             shift=3.0,
             thinking=True,
             use_cot_caption=False,
-            use_cot_metas=False,
+            use_cot_metas=True,
         )
         config = GenerationConfig(
             batch_size=1, audio_format="wav", use_random_seed=True
@@ -100,4 +100,9 @@ class AceStep:
             if not source.is_file():
                 raise RuntimeError("ACE-Step returned no audio file")
             shutil.copyfile(source, destination)
-            log.info("generated song: %ss, bpm=%s, key=%s", seconds, bpm, key)
+            log.info(
+                "generated song: %ss, bpm=%s, key=%s",
+                seconds,
+                bpm if bpm is not None else getattr(params, "cot_bpm", None),
+                key or getattr(params, "cot_keyscale", ""),
+            )
