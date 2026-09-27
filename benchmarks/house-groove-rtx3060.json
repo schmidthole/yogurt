@@ -1,0 +1,12 @@
+{
+  "initialization_seconds": 62.15,
+  "generation_seconds": 124.94,
+  "duration_seconds": 210,
+  "realtime_factor": 0.609,
+  "passes": true,
+  "date": "2026-09-27",
+  "profile": "Groove-led melodic techno / house, sparse Russian female vocals",
+  "model_selected_bpm": 238,
+  "model_selected_key": "F minor",
+  "note": "Metadata is model output, not an independently measured tempo/key. Vocal balance and pronunciation require listening."
+}
